@@ -1,7 +1,7 @@
 // Adaptado de FitBox (components/layout/*): misma estructura de barra lateral,
 // cabecera y navegación inferior en móvil.
 import type { ReactNode } from 'react'
-import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound } from 'lucide-react'
+import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound, CalendarDays } from 'lucide-react'
 import { centerOf } from '@/lib/centers'
 import { cn } from '@/lib/utils'
 import { navigate } from '@/lib/router'
@@ -16,6 +16,7 @@ function navFor(coach: Coach) {
   const c = centerOf(coach)
   return [
     { label: 'Panel', to: '/', icon: LayoutDashboard },
+    ...(c.has('clases') ? [{ label: 'Clases', to: '/clases', icon: CalendarDays }] : []),
     { label: c.cfg.people, to: '/clientes', icon: Users },
     ...(c.has('grupos') ? [{ label: 'Grupos', to: '/grupos', icon: UsersRound }] : []),
     { label: 'Ajustes', to: '/ajustes', icon: Settings },

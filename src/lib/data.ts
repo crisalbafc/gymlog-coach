@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-export type Coach = { user_id: string; name: string; coach_code: string; center_name?: string | null; center_type?: string | null; modules?: string[] | null }
+export type Coach = { user_id: string; name: string; coach_code: string; center_name?: string | null; center_type?: string | null; modules?: string[] | null; cancel_hours?: number }
 
 export type ClientRow = {
   client_id: string; display_name: string; email: string
