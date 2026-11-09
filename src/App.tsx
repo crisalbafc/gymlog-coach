@@ -11,6 +11,9 @@ import Dashboard from '@/pages/Dashboard'
 import Clients from '@/pages/Clients'
 import ClientDetail from '@/pages/ClientDetail'
 import SettingsPage from '@/pages/Settings'
+import Groups from '@/pages/Groups'
+import GroupDetail from '@/pages/GroupDetail'
+import LiveSession from '@/pages/LiveSession'
 
 export default function App() {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
@@ -35,9 +38,14 @@ export default function App() {
   else if (!coach) content = <BecomeCoach onDone={refreshCoach} />
   else {
     const m = path.match(/^\/clientes\/([0-9a-f-]{36})/)
+    const g = path.match(/^\/grupos\/([0-9a-f-]{36})/)
+    const ses = path.match(/^\/sesion\/([0-9a-f-]{36})/)
     content = (
       <AppLayout coach={coach} email={session.user.email || ''} path={path}>
         {m ? <ClientDetail clientId={m[1]} coach={coach} />
+          : ses ? <LiveSession sessionId={ses[1]} />
+          : g ? <GroupDetail groupId={g[1]} coach={coach} />
+          : path.startsWith('/grupos') ? <Groups />
           : path.startsWith('/clientes') ? <Clients />
           : path.startsWith('/ajustes') ? <SettingsPage coach={coach} onChange={refreshCoach} />
           : <Dashboard coach={coach} />}

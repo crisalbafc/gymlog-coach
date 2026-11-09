@@ -1,7 +1,8 @@
 // Adaptado de FitBox (components/layout/*): misma estructura de barra lateral,
 // cabecera y navegación inferior en móvil.
 import type { ReactNode } from 'react'
-import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound } from 'lucide-react'
+import { centerOf } from '@/lib/centers'
 import { cn } from '@/lib/utils'
 import { navigate } from '@/lib/router'
 import { supabase } from '@/lib/supabase'
@@ -11,21 +12,27 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-const NAV = [
-  { label: 'Panel', to: '/', icon: LayoutDashboard },
-  { label: 'Clientes', to: '/clientes', icon: Users },
-  { label: 'Ajustes', to: '/ajustes', icon: Settings },
-]
+function navFor(coach: Coach) {
+  const c = centerOf(coach)
+  return [
+    { label: 'Panel', to: '/', icon: LayoutDashboard },
+    { label: c.cfg.people, to: '/clientes', icon: Users },
+    ...(c.has('grupos') ? [{ label: 'Grupos', to: '/grupos', icon: UsersRound }] : []),
+    { label: 'Ajustes', to: '/ajustes', icon: Settings },
+  ]
+}
 
 const isActive = (path: string, to: string) => (to === '/' ? path === '/' : path.startsWith(to))
 
 export function AppLayout({ coach, email, path, children }: { coach: Coach; email: string; path: string; children: ReactNode }) {
+  const NAV = navFor(coach)
+  const center = centerOf(coach)
   return (
     <div className="min-h-dvh flex bg-background text-foreground">
       <aside className="hidden md:flex flex-col w-60 border-r border-border bg-background sticky top-0 h-dvh">
         <div className="h-14 flex items-center gap-2 px-6 border-b border-border">
           <img src="./icon-192.png" alt="" className="h-6 w-6 rounded" />
-          <span className="font-semibold tracking-tight truncate">GymLog Coach</span>
+          <span className="font-semibold tracking-tight truncate">{coach.center_name || 'GymLog Coach'}</span>
         </div>
         <nav className="flex-1 p-3 space-y-0.5">
           {NAV.map((item) => {
@@ -45,7 +52,7 @@ export function AppLayout({ coach, email, path, children }: { coach: Coach; emai
             )
           })}
         </nav>
-        <div className="p-4 text-xs text-muted-foreground border-t border-border">Conectado a GymLog</div>
+        <div className="p-4 text-xs text-muted-foreground border-t border-border">{center.cfg.label}<br />GymLog Coach</div>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -54,7 +61,7 @@ export function AppLayout({ coach, email, path, children }: { coach: Coach; emai
             <span aria-hidden className="h-6 w-1 rounded-full shrink-0 bg-brand" />
             <div className="min-w-0">
               <div className="text-sm font-semibold truncate">{coach.name}</div>
-              <div className="text-xs text-muted-foreground truncate">Entrenador · código {coach.coach_code}</div>
+              <div className="text-xs text-muted-foreground truncate">{coach.center_name ? `${coach.center_name} · ` : ''}código {coach.coach_code}</div>
             </div>
           </div>
           <DropdownMenu>
@@ -84,7 +91,7 @@ export function AppLayout({ coach, email, path, children }: { coach: Coach; emai
 
         <div className="md:hidden h-16" aria-hidden />
         <nav aria-label="Navegación principal" className="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 border-t border-border bg-background/95 backdrop-blur">
-          <ul className="grid grid-cols-3 h-full">
+          <ul className="grid h-full" style={{ gridTemplateColumns: `repeat(${NAV.length}, minmax(0, 1fr))` }}>
             {NAV.map((item) => {
               const Icon = item.icon
               return (

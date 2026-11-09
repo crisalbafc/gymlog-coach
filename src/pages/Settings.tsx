@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { inviteText } from './Dashboard'
+import { CenterSettings } from '@/components/CenterSettings'
 
 export default function SettingsPage({ coach, onChange }: { coach: Coach; onChange: () => void }) {
   const [name, setName] = useState(coach.name)
@@ -21,6 +22,7 @@ export default function SettingsPage({ coach, onChange }: { coach: Coach; onChan
   return (
     <div className="max-w-xl space-y-8">
       <PageHeader title="Ajustes" />
+      <CenterSettings coach={coach} onChange={onChange} />
       <section className="rounded-lg border border-border bg-card p-6 space-y-4">
         <h2 className="font-semibold">Tu código de entrenador</h2>
         <div className="text-3xl font-semibold tracking-[0.2em] text-brand">{coach.coach_code}</div>
@@ -30,7 +32,7 @@ export default function SettingsPage({ coach, onChange }: { coach: Coach; onChan
         </Button>
       </section>
       <section className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="font-semibold">Tu nombre</h2>
+        <h2 className="font-semibold">Tu nombre como entrenador</h2>
         <div className="space-y-2">
           <Label htmlFor="n">Lo ven tus clientes en GymLog y en tus mensajes</Label>
           <Input id="n" value={name} onChange={(e) => setName(e.target.value)} />
