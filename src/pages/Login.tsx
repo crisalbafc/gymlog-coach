@@ -40,7 +40,7 @@ export default function Login() {
           <Button type="submit" className="w-full" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</Button>
         </form>
         <p className="mt-4 text-xs text-muted-foreground text-center">
-          ¿No tienes cuenta? Créala en la app <a className="underline" href="https://crisalbafc.github.io/gym-app/">GymLog</a> y vuelve aquí.
+          ¿No tienes cuenta? Créala en la app <a className="underline" href="https://crisalbafc.github.io/gymlog/">GymLog</a> y vuelve aquí.
         </p>
       </div>
     </div>

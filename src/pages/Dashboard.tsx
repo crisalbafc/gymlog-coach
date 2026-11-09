@@ -11,7 +11,7 @@ import { navigate } from '@/lib/router'
 const ICON: Record<Alert['kind'], typeof Dumbbell> = { inactivo: Dumbbell, dieta: Apple, revision: CalendarClock, peso: Scale }
 
 export function inviteText(coach: Coach) {
-  return `¡Hola! Para que pueda seguir tu progreso:\n1. Instala GymLog: https://crisalbafc.github.io/gym-app/\n2. Crea tu cuenta\n3. Ve a Ajustes → Mi entrenador y mete mi código: ${coach.coach_code}`
+  return `¡Hola! Para que pueda seguir tu progreso:\n1. Instala GymLog: https://crisalbafc.github.io/gymlog/\n2. Crea tu cuenta\n3. Ve a Ajustes → Mi entrenador y mete mi código: ${coach.coach_code}`
 }
 
 export default function Dashboard({ coach }: { coach: Coach }) {
