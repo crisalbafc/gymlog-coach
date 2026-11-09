@@ -1,7 +1,8 @@
 // Adaptado de FitBox (components/layout/*): misma estructura de barra lateral,
 // cabecera y navegación inferior en móvil.
-import type { ReactNode } from 'react'
-import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound, CalendarDays, Wallet } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound, CalendarDays, Wallet, Menu, Flame, Trophy, Megaphone } from 'lucide-react'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { centerOf } from '@/lib/centers'
 import { cn } from '@/lib/utils'
 import { navigate } from '@/lib/router'
@@ -20,6 +21,9 @@ function navFor(coach: Coach) {
     { label: c.cfg.people, to: '/clientes', icon: Users },
     ...(c.has('grupos') ? [{ label: 'Grupos', to: '/grupos', icon: UsersRound }] : []),
     ...(c.has('pagos') ? [{ label: 'Pagos', to: '/pagos', icon: Wallet }] : []),
+    ...(c.has('wods') ? [{ label: 'WOD', to: '/wods', icon: Flame }] : []),
+    ...(c.has('prs') ? [{ label: 'Marcas', to: '/marcas', icon: Trophy }] : []),
+    ...(c.has('feed') ? [{ label: 'Novedades', to: '/feed', icon: Megaphone }] : []),
     { label: 'Ajustes', to: '/ajustes', icon: Settings },
   ]
 }
@@ -92,9 +96,50 @@ export function AppLayout({ coach, email, path, children }: { coach: Coach; emai
         <main className="flex-1 p-4 sm:p-6 md:p-8 pb-24 md:pb-8">{children}</main>
 
         <div className="md:hidden h-16" aria-hidden />
+        <MobileNav nav={NAV} path={path} />
+      </div>
+    </div>
+  )
+}
+
+/** Navegación inferior en móvil: hasta 5 botones; el resto en «Más» (como en FitBox). */
+function MobileNav({ nav, path }: { nav: ReturnType<typeof navFor>; path: string }) {
+  const [open, setOpen] = useState(false)
+  const primary = nav.length <= 5 ? nav : nav.slice(0, 4)
+  const secondary = nav.length <= 5 ? [] : nav.slice(4)
+  const cols = primary.length + (secondary.length ? 1 : 0)
+  return (
         <nav aria-label="Navegación principal" className="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 border-t border-border bg-background/95 backdrop-blur">
-          <ul className="grid h-full" style={{ gridTemplateColumns: `repeat(${NAV.length}, minmax(0, 1fr))` }}>
-            {NAV.map((item) => {
+          <ul className="grid h-full" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+            {secondary.length > 0 && (
+              <li className="order-last">
+                <Sheet open={open} onOpenChange={setOpen}>
+                  <SheetTrigger asChild>
+                    <button type="button" aria-label="Más opciones"
+                      className={cn('flex flex-col items-center justify-center h-full w-full gap-1 text-[11px] font-medium', secondary.some((i) => isActive(path, i.to)) ? 'text-foreground' : 'text-muted-foreground')}>
+                      <Menu className="h-5 w-5" strokeWidth={1.5} /><span>Más</span>
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="pb-8">
+                    <SheetHeader className="mb-2"><SheetTitle>Menú</SheetTitle></SheetHeader>
+                    <ul className="grid gap-1 px-4">
+                      {secondary.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <li key={item.to}>
+                            <a href={`#${item.to}`} onClick={() => setOpen(false)}
+                              className={cn('flex items-center gap-3 px-3 h-11 rounded-md text-sm', isActive(path, item.to) ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground')}>
+                              <Icon className="h-4 w-4" strokeWidth={1.5} /><span>{item.label}</span>
+                            </a>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </SheetContent>
+                </Sheet>
+              </li>
+            )}
+            {primary.map((item) => {
               const Icon = item.icon
               return (
                 <li key={item.to}>
@@ -110,8 +155,6 @@ export function AppLayout({ coach, email, path, children }: { coach: Coach; emai
             })}
           </ul>
         </nav>
-      </div>
-    </div>
   )
 }
 

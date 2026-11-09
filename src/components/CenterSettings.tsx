@@ -66,7 +66,7 @@ export function CenterSettings({ coach, onChange }: { coach: Coach; onChange: ()
         ))}
       </div>
 
-      {cfg.fitbox && (
+      {cfg.fitbox && FITBOX_MODULES.length > 0 && (
         <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground flex gap-2">
           <Info className="h-4 w-4 shrink-0" strokeWidth={1.5} />
           <span>Para este tipo de centro también se usan los módulos de FitBox: {FITBOX_MODULES.join(', ')}. Se integrarán aquí más adelante.</span>
