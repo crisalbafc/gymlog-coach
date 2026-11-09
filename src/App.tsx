@@ -15,6 +15,7 @@ import Groups from '@/pages/Groups'
 import GroupDetail from '@/pages/GroupDetail'
 import LiveSession from '@/pages/LiveSession'
 import Classes from '@/pages/Classes'
+import Billing from '@/pages/Billing'
 
 export default function App() {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
@@ -48,6 +49,7 @@ export default function App() {
           : g ? <GroupDetail groupId={g[1]} coach={coach} />
           : path.startsWith('/grupos') ? <Groups />
           : path.startsWith('/clases') ? <Classes coach={coach} onCoachChange={refreshCoach} />
+          : path.startsWith('/pagos') ? <Billing coach={coach} onCoachChange={refreshCoach} />
           : path.startsWith('/clientes') ? <Clients />
           : path.startsWith('/ajustes') ? <SettingsPage coach={coach} onChange={refreshCoach} />
           : <Dashboard coach={coach} />}

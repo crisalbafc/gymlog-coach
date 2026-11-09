@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-export type Coach = { user_id: string; name: string; coach_code: string; center_name?: string | null; center_type?: string | null; modules?: string[] | null; cancel_hours?: number }
+export type Coach = { user_id: string; name: string; coach_code: string; center_name?: string | null; center_type?: string | null; modules?: string[] | null; cancel_hours?: number; require_plan?: boolean }
 
 export type ClientRow = {
   client_id: string; display_name: string; email: string
@@ -12,7 +12,7 @@ export type ClientRow = {
   kcal_goal: number; protein_goal: number
 }
 
-export type Alert = { client: ClientRow; kind: 'inactivo' | 'dieta' | 'revision' | 'peso'; text: string; level: 'alta' | 'media' }
+export type Alert = { client: ClientRow; kind: 'inactivo' | 'dieta' | 'revision' | 'peso' | 'plan'; text: string; level: 'alta' | 'media' }
 
 export async function loadCoach(): Promise<Coach | null> {
   const { data: { user } } = await supabase.auth.getUser()

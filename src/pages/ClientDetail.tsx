@@ -12,6 +12,8 @@ import { BodyTab } from './client/BodyTab'
 import { PhotosTab } from './client/PhotosTab'
 import { RoutinesTab } from './client/RoutinesTab'
 import { MessagesTab } from './client/MessagesTab'
+import { BillingTab } from './client/BillingTab'
+import { centerOf } from '@/lib/centers'
 
 export function NotShared({ what }: { what: string }) {
   return (
@@ -55,6 +57,7 @@ export default function ClientDetail({ clientId, coach }: { clientId: string; co
             <TabsTrigger value="fotos">Fotos</TabsTrigger>
             <TabsTrigger value="rutinas">Rutinas</TabsTrigger>
             <TabsTrigger value="mensajes">Mensajes</TabsTrigger>
+            {centerOf(coach).has('pagos') && <TabsTrigger value="pagos">Plan y pagos</TabsTrigger>}
           </TabsList>
         </div>
         <TabsContent value="resumen"><SummaryTab client={client} onChange={reload} /></TabsContent>
@@ -64,6 +67,7 @@ export default function ClientDetail({ clientId, coach }: { clientId: string; co
         <TabsContent value="fotos">{client.share_photos ? <PhotosTab clientId={clientId} /> : <NotShared what="sus fotos" />}</TabsContent>
         <TabsContent value="rutinas"><RoutinesTab clientId={clientId} coachId={coach.user_id} /></TabsContent>
         <TabsContent value="mensajes"><MessagesTab clientId={clientId} /></TabsContent>
+        <TabsContent value="pagos"><BillingTab client={client} /></TabsContent>
       </Tabs>
     </div>
   )
