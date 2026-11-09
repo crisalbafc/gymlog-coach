@@ -19,15 +19,30 @@ export function CenterSettings({ coach, onChange }: { coach: Coach; onChange: ()
   const cfg = CENTER_TYPES[type]
   const ready = 'center_type' in coach
 
-  function pickType(t: CenterType) {
+  // Al cambiar de tipo se aplica al momento con sus módulos por defecto
+  async function pickType(t: CenterType) {
     setType(t)
-    setModules(CENTER_TYPES[t].modules) // al cambiar de tipo, módulos por defecto
+    setModules(CENTER_TYPES[t].modules)
+    const { error } = await supabase.rpc('update_center', { p_name: name, p_type: t, p_modules: CENTER_TYPES[t].modules })
+    if (error) return toast.error(errMsg(error))
+    toast.success(`Ahora tu centro es: ${CENTER_TYPES[t].label}`); onChange()
   }
   async function save() {
     const { error } = await supabase.rpc('update_center', { p_name: name, p_type: type, p_modules: modules })
     if (error) return toast.error(errMsg(error))
     toast.success('Centro guardado'); onChange()
   }
+  const menuPreview = [
+    'Panel',
+    ...(modules.includes('clases') ? ['Clases'] : []),
+    cfg.people,
+    ...(modules.includes('grupos') ? ['Grupos'] : []),
+    ...(modules.includes('pagos') ? ['Pagos'] : []),
+    ...(modules.includes('wods') ? ['WOD'] : []),
+    ...(modules.includes('prs') ? ['Marcas'] : []),
+    ...(modules.includes('feed') ? ['Novedades'] : []),
+    'Ajustes',
+  ]
 
   if (!ready) {
     return <section className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">Falta activar los tipos de centro en el servidor (013-centros-grupos.sql).</section>
@@ -52,6 +67,9 @@ export function CenterSettings({ coach, onChange }: { coach: Coach; onChange: ()
         </div>
       </div>
       <p className="text-sm text-muted-foreground">{cfg.description}</p>
+      <div className="rounded-md bg-muted/40 border border-border px-3 py-2 text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Menú:</span> {menuPreview.join(' · ')}
+      </div>
 
       <div className="space-y-3">
         <div className="text-xs uppercase tracking-wide text-muted-foreground">Módulos</div>
@@ -72,7 +90,7 @@ export function CenterSettings({ coach, onChange }: { coach: Coach; onChange: ()
           <span>Para este tipo de centro también se usan los módulos de FitBox: {FITBOX_MODULES.join(', ')}. Se integrarán aquí más adelante.</span>
         </div>
       )}
-      <Button onClick={save} disabled={modules.length === 0}>Guardar centro</Button>
+      <Button onClick={save} disabled={modules.length === 0}>Guardar nombre y módulos</Button>
     </section>
   )
 }
