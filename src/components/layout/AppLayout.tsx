@@ -1,13 +1,13 @@
 // Adaptado de FitBox (components/layout/*): misma estructura de barra lateral,
 // cabecera y navegación inferior en móvil.
 import { useState, type ReactNode } from 'react'
-import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound, CalendarDays, Wallet, Menu, Flame, Trophy, Megaphone } from 'lucide-react'
+import { LayoutDashboard, Users, Settings, LogOut, User as UserIcon, ChevronDown, UsersRound, CalendarDays, Wallet, Menu, Flame, Trophy, Megaphone, Contact } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { centerOf } from '@/lib/centers'
 import { cn } from '@/lib/utils'
 import { navigate } from '@/lib/router'
 import { supabase } from '@/lib/supabase'
-import type { Coach } from '@/lib/data'
+import { isAdmin, type Coach } from '@/lib/data'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -20,10 +20,11 @@ function navFor(coach: Coach) {
     ...(c.has('clases') ? [{ label: 'Clases', to: '/clases', icon: CalendarDays }] : []),
     { label: c.cfg.people, to: '/clientes', icon: Users },
     ...(c.has('grupos') ? [{ label: 'Grupos', to: '/grupos', icon: UsersRound }] : []),
-    ...(c.has('pagos') ? [{ label: 'Pagos', to: '/pagos', icon: Wallet }] : []),
+    ...(c.has('pagos') && isAdmin(coach) ? [{ label: 'Pagos', to: '/pagos', icon: Wallet }] : []),
     ...(c.has('wods') ? [{ label: 'WOD', to: '/wods', icon: Flame }] : []),
     ...(c.has('prs') ? [{ label: 'Marcas', to: '/marcas', icon: Trophy }] : []),
     ...(c.has('feed') ? [{ label: 'Novedades', to: '/feed', icon: Megaphone }] : []),
+    ...(isAdmin(coach) ? [{ label: 'Equipo', to: '/equipo', icon: Contact }] : []),
     { label: 'Ajustes', to: '/ajustes', icon: Settings },
   ]
 }
@@ -66,8 +67,8 @@ export function AppLayout({ coach, email, path, children }: { coach: Coach; emai
           <div className="flex items-center gap-3 min-w-0">
             <span aria-hidden className="h-6 w-1 rounded-full shrink-0 bg-brand" />
             <div className="min-w-0">
-              <div className="text-sm font-semibold truncate">{coach.name}</div>
-              <div className="text-xs text-muted-foreground truncate">{coach.center_name ? `${coach.center_name} · ` : ''}código {coach.coach_code}</div>
+              <div className="text-sm font-semibold truncate">{coach.my_role && coach.my_role !== 'dueño' ? (coach.my_name || 'Entrenador') : coach.name}</div>
+              <div className="text-xs text-muted-foreground truncate">{coach.center_name ? `${coach.center_name} · ` : ''}{coach.my_role && coach.my_role !== 'dueño' ? coach.my_role : `código ${coach.coach_code}`}</div>
             </div>
           </div>
           <DropdownMenu>

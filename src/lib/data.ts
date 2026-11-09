@@ -1,6 +1,9 @@
 import { supabase } from './supabase'
 
-export type Coach = { user_id: string; name: string; coach_code: string; center_name?: string | null; center_type?: string | null; modules?: string[] | null; cancel_hours?: number; require_plan?: boolean }
+export type Coach = { user_id: string; name: string; coach_code: string; center_name?: string | null; center_type?: string | null; modules?: string[] | null; cancel_hours?: number; require_plan?: boolean; my_role?: 'dueño' | 'admin' | 'entrenador'; my_name?: string | null }
+
+/** ¿Puede gestionar el centro (pagos, equipo, ajustes)? */
+export const isAdmin = (c: Coach) => !c.my_role || c.my_role !== 'entrenador'
 
 export type ClientRow = {
   client_id: string; display_name: string; email: string
@@ -17,6 +20,10 @@ export type Alert = { client: ClientRow; kind: 'inactivo' | 'dieta' | 'revision'
 export async function loadCoach(): Promise<Coach | null> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
+  // Centro al que pertenezco (como dueño o como entrenador del equipo)
+  const { data: info, error } = await supabase.rpc('my_center_info')
+  if (!error) return ((info as Coach[]) || [])[0] || null
+  // Servidor sin equipos todavía: comportamiento anterior
   const { data } = await supabase.from('coaches').select('*').eq('user_id', user.id).maybeSingle()
   return (data as Coach) || null
 }

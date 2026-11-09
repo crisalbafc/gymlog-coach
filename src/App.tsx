@@ -19,6 +19,8 @@ import Billing from '@/pages/Billing'
 import Wods from '@/pages/Wods'
 import Marks from '@/pages/Marks'
 import Feed from '@/pages/Feed'
+import Team from '@/pages/Team'
+import { isAdmin } from '@/lib/data'
 
 export default function App() {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
@@ -52,7 +54,8 @@ export default function App() {
           : g ? <GroupDetail groupId={g[1]} coach={coach} />
           : path.startsWith('/grupos') ? <Groups />
           : path.startsWith('/clases') ? <Classes coach={coach} onCoachChange={refreshCoach} />
-          : path.startsWith('/pagos') ? <Billing coach={coach} onCoachChange={refreshCoach} />
+          : path.startsWith('/pagos') && isAdmin(coach) ? <Billing coach={coach} onCoachChange={refreshCoach} />
+          : path.startsWith('/equipo') && isAdmin(coach) ? <Team coach={coach} />
           : path.startsWith('/wods') ? <Wods />
           : path.startsWith('/marcas') ? <Marks />
           : path.startsWith('/feed') ? <Feed coach={coach} />
