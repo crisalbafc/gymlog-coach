@@ -5,6 +5,7 @@ import { MetricChart } from '@/components/MetricChart'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { fmtDay, round } from '@/lib/data'
+import { CardioSection } from './CardioSection'
 
 type Set = { id: string; exercise_id: string; weight: number; reps: number; created_at: string }
 type W = { id: string; name: string | null; started_at: string; ended_at: string | null; workout_sets: Set[] }
@@ -56,7 +57,7 @@ export function WorkoutsTab({ clientId }: { clientId: string }) {
   const best = allSets.filter((x) => x.exercise_id === selected).sort((a, b) => b.weight - a.weight || b.reps - a.reps)[0]
 
   if (!workouts) return <Skeleton className="h-48 w-full" />
-  if (!workouts.length) return <p className="text-sm text-muted-foreground">Aún no ha terminado ningún entreno.</p>
+  if (!workouts.length) return <div className="space-y-8"><p className="text-sm text-muted-foreground">Aún no ha terminado ningún entreno de fuerza.</p><CardioSection clientId={clientId} /></div>
 
   return (
     <div className="space-y-8">
@@ -71,6 +72,8 @@ export function WorkoutsTab({ clientId }: { clientId: string }) {
         {best && <p className="mt-2 text-sm text-muted-foreground flex items-center gap-1.5"><Trophy className="h-4 w-4 text-yellow-400" strokeWidth={1.5} /> Mejor serie: <b className="text-foreground">{round(+best.weight, 2)} kg × {best.reps}</b></p>}
         <MetricChart data={series} label="Peso máximo" unit=" kg" />
       </section>
+
+      <CardioSection clientId={clientId} />
 
       <section>
         <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wide">Historial</h2>
